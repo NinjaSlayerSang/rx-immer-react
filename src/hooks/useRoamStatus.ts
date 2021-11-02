@@ -8,21 +8,23 @@ export interface WithUseRoamStatus {
 export function injectUseRoamStatus<T>(
   rxImmer: RxImmer<T> & Partial<WithUseRoamStatus>
 ) {
-  rxImmer.useRoamStatus = function () {
-    const [roamStatus, setRoamStatus] = useState<[number, number]>(
-      this.roamStatus$?.getValue() ?? [0, 0]
-    );
+  if (rxImmer.roamStatus$) {
+    rxImmer.useRoamStatus = function () {
+      const [roamStatus, setRoamStatus] = useState<[number, number]>(
+        this.roamStatus$?.getValue() ?? [0, 0]
+      );
 
-    useEffect(() => {
-      const subscription = this.roamStatus$?.subscribe((value) => {
-        setRoamStatus(value);
-      });
-      return () => {
-        subscription?.unsubscribe();
-      };
-    }, [this]);
+      useEffect(() => {
+        const subscription = this.roamStatus$?.subscribe((value) => {
+          setRoamStatus(value);
+        });
+        return () => {
+          subscription?.unsubscribe();
+        };
+      }, [this]);
 
-    return roamStatus;
-  };
-  return rxImmer as RxImmer<T> & WithUseRoamStatus;
+      return roamStatus;
+    };
+  }
+  return rxImmer;
 }

@@ -36,7 +36,7 @@ export interface WithUseBind<T> {
 export function injectUseBind<T>(
   rxImmer: RxImmer<T> & Partial<WithUseBind<T>>
 ) {
-  rxImmer.useBind = function useBind(listenPath?: Path) {
+  rxImmer.useBind = function (listenPath?: Path) {
     return useRxImmerBind(this, listenPath!);
   };
   return rxImmer as RxImmer<T> & WithUseBind<T>;

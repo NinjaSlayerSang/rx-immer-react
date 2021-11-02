@@ -8,19 +8,21 @@ export interface WithUseDiachronySize {
 export function injectUseDiachronySize<T>(
   rxImmer: RxImmer<T> & Partial<WithUseDiachronySize>
 ) {
-  rxImmer.useDiachronySize = function () {
-    const [size, setSize] = useState(this.size$?.getValue() ?? 0);
+  if (rxImmer.size$) {
+    rxImmer.useDiachronySize = function () {
+      const [size, setSize] = useState(this.size$?.getValue() ?? 0);
 
-    useEffect(() => {
-      const subscription = this.size$?.subscribe((value) => {
-        setSize(value);
-      });
-      return () => {
-        subscription?.unsubscribe();
-      };
-    }, [this]);
+      useEffect(() => {
+        const subscription = this.size$?.subscribe((value) => {
+          setSize(value);
+        });
+        return () => {
+          subscription?.unsubscribe();
+        };
+      }, [this]);
 
-    return size;
-  };
-  return rxImmer as RxImmer<T> & WithUseDiachronySize;
+      return size;
+    };
+  }
+  return rxImmer;
 }
