@@ -6,6 +6,12 @@ import { useRxImmerBind } from './useBind';
 
 type SetStateAction<S> = S | ((prevState: Immutable<S> | undefined) => S);
 
+function isReducer<S>(
+  action: SetStateAction<S>
+): action is (prevState: Immutable<S> | undefined) => S {
+  return typeof action === 'function';
+}
+
 export function useRxImmerTwoWayBind<T, V = any>(
   rxImmer: RxImmer<T>,
   listenPath: Path
@@ -13,10 +19,10 @@ export function useRxImmerTwoWayBind<T, V = any>(
   const value = useRxImmerBind<T, V>(rxImmer, listenPath);
 
   const setValue = useCallback<Dispatch<SetStateAction<V>>>(
-    (a: any) => {
+    (a) => {
       const paths = toPath(listenPath);
       if (paths.length) {
-        const v = typeof a === 'function' ? a(get(rxImmer.value(), paths)) : a;
+        const v = isReducer(a) ? a(get(rxImmer.value(), paths)) : a;
         const target = paths.pop();
         rxImmer.commit((draft) => {
           draft[target] = v;

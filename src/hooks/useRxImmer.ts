@@ -1,10 +1,4 @@
-import {
-  Config,
-  createRxImmer,
-  DeepPartial,
-  Objectish,
-  RxImmer,
-} from 'rx-immer';
+import { Config, create, DeepPartial, Objectish, RxImmer } from 'rx-immer';
 import { useEffect, useRef } from 'react';
 
 import type { RxImmerWithHooks } from './type';
@@ -16,7 +10,7 @@ export function useRxImmer<T extends Objectish>(
 ) {
   const ref = useRef<RxImmer<T>>();
   if (!ref.current) {
-    ref.current = createRxImmer(initial, config);
+    ref.current = create(initial, config);
 
     ref.current = injectHooks(ref.current);
   }
