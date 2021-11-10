@@ -4,18 +4,18 @@ import { get, toPath } from 'lodash';
 
 import { useRxImmerBind } from './useBind';
 
-type SetStateAction<S> = S | ((prevState: Immutable<S> | undefined) => S);
+type SetStateAction<S> = S | ((prevState: Immutable<S>) => S);
 
 function isReducer<S>(
   action: SetStateAction<S>
-): action is (prevState: Immutable<S> | undefined) => S {
+): action is (prevState: Immutable<S>) => S {
   return typeof action === 'function';
 }
 
 export function useRxImmerTwoWayBind<T, V = any>(
   rxImmer: RxImmer<T>,
   listenPath: Path
-): [Immutable<V> | undefined, Dispatch<SetStateAction<V>>] {
+): [Immutable<V>, Dispatch<SetStateAction<V>>] {
   const value = useRxImmerBind<T, V>(rxImmer, listenPath);
 
   const setValue = useCallback<Dispatch<SetStateAction<V>>>(
@@ -38,7 +38,7 @@ export function useRxImmerTwoWayBind<T, V = any>(
 export interface WithUseTwoWayBind {
   useTwoWayBind<V = any>(
     listenPath: Path
-  ): [Immutable<V> | undefined, Dispatch<SetStateAction<V>>];
+  ): [Immutable<V>, Dispatch<SetStateAction<V>>];
 }
 
 export function injectUseTwoWayBind<T>(
