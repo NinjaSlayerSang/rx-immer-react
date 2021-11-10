@@ -7,7 +7,7 @@ export function useRxImmerBind<T>(rxImmer: RxImmer<T>): Immutable<T>;
 export function useRxImmerBind<T, V = any>(
   rxImmer: RxImmer<T>,
   listenPath: Path
-): Immutable<V> | undefined;
+): Immutable<V>;
 
 export function useRxImmerBind<T>(rxImmer: RxImmer<T>, listenPath?: Path) {
   const [value, setValue] = useState(
@@ -30,7 +30,7 @@ export function useRxImmerBind<T>(rxImmer: RxImmer<T>, listenPath?: Path) {
 
 export interface WithUseBind<T> {
   useBind(): Immutable<T>;
-  useBind<V = any>(listenPath: Path): Immutable<V> | undefined;
+  useBind<V = any>(listenPath: Path): Immutable<V>;
 }
 
 export function injectUseBind<T>(
