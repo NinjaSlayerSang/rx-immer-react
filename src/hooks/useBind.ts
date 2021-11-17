@@ -1,43 +1,32 @@
-import type { Immutable, Path, RxImmer } from 'rx-immer';
+import { assemblePath, Immutable, Path } from 'rx-immer';
 import { useEffect, useState } from 'react';
-import { get, toPath } from 'lodash';
-
-export function useRxImmerBind<T>(rxImmer: RxImmer<T>): Immutable<T>;
-
-export function useRxImmerBind<T, V = any>(
-  rxImmer: RxImmer<T>,
-  listenPath: Path
-): Immutable<V>;
-
-export function useRxImmerBind<T>(rxImmer: RxImmer<T>, listenPath?: Path) {
-  const [value, setValue] = useState(
-    listenPath === undefined
-      ? rxImmer.value()
-      : get(rxImmer.value(), listenPath)
-  );
-
-  useEffect(() => {
-    const subscription = rxImmer.observe(listenPath!).subscribe((v) => {
-      setValue(v);
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [rxImmer, toPath(listenPath).join()]);
-
-  return value;
-}
+import { get } from 'lodash';
 
 export interface WithUseBind<T> {
   useBind(): Immutable<T>;
   useBind<V = any>(listenPath: Path): Immutable<V>;
 }
 
-export function injectUseBind<T>(
-  rxImmer: RxImmer<T> & Partial<WithUseBind<T>>
-) {
-  rxImmer.useBind = function (listenPath?: Path) {
-    return useRxImmerBind(this, listenPath!);
+export function useInstanceBind(instance, listenPath) {
+  const [value, setValue] = useState(
+    listenPath === undefined
+      ? instance.value()
+      : get(instance.value(), listenPath)
+  );
+
+  useEffect(() => {
+    const subscription = instance.observe(listenPath).subscribe(setValue);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [instance, assemblePath(listenPath ?? [])]);
+
+  return value;
+}
+
+export function injectUseBind(instance) {
+  instance.useBind = function (listenPath) {
+    return useInstanceBind(this, listenPath);
   };
-  return rxImmer as RxImmer<T> & WithUseBind<T>;
+  return instance;
 }

@@ -1,30 +1,23 @@
-import type { RxImmer } from 'rx-immer';
 import { useEffect, useState } from 'react';
 
 export interface WithUseRoamStatus {
   useRoamStatus(): [number, number];
 }
 
-export function injectUseRoamStatus<T>(
-  rxImmer: RxImmer<T> & Partial<WithUseRoamStatus>
-) {
-  if (rxImmer.roamStatus$) {
-    rxImmer.useRoamStatus = function () {
-      const [roamStatus, setRoamStatus] = useState<[number, number]>(
-        this.roamStatus$?.getValue() ?? [0, 0]
-      );
+export function injectUseRoamStatus(instance) {
+  if (instance.roamStatus$) {
+    instance.useRoamStatus = function () {
+      const [roamStatus, setRoamStatus] = useState(this.roamStatus$.getValue());
 
       useEffect(() => {
-        const subscription = this.roamStatus$?.subscribe((value) => {
-          setRoamStatus(value);
-        });
+        const subscription = this.roamStatus$.subscribe(setRoamStatus);
         return () => {
-          subscription?.unsubscribe();
+          subscription.unsubscribe();
         };
       }, [this]);
 
       return roamStatus;
     };
   }
-  return rxImmer;
+  return instance;
 }

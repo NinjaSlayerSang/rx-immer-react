@@ -1,28 +1,23 @@
-import type { RxImmer } from 'rx-immer';
 import { useEffect, useState } from 'react';
 
 export interface WithUseDiachronySize {
   useDiachronySize(): number;
 }
 
-export function injectUseDiachronySize<T>(
-  rxImmer: RxImmer<T> & Partial<WithUseDiachronySize>
-) {
-  if (rxImmer.size$) {
-    rxImmer.useDiachronySize = function () {
-      const [size, setSize] = useState(this.size$?.getValue() ?? 0);
+export function injectUseDiachronySize(instance) {
+  if (instance.size$) {
+    instance.useDiachronySize = function () {
+      const [size, setSize] = useState(this.size$?.getValue());
 
       useEffect(() => {
-        const subscription = this.size$?.subscribe((value) => {
-          setSize(value);
-        });
+        const subscription = this.size$.subscribe(setSize);
         return () => {
-          subscription?.unsubscribe();
+          subscription.unsubscribe();
         };
       }, [this]);
 
       return size;
     };
   }
-  return rxImmer;
+  return instance;
 }
