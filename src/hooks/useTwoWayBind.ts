@@ -1,39 +1,9 @@
-import type { Immutable, Path, RxImmer } from 'rx-immer';
+import { assemblePath, Immutable, Path } from 'rx-immer';
 import { Dispatch, useCallback } from 'react';
-import { get, toPath } from 'lodash';
 
-import { useRxImmerBind } from './useBind';
+import { useInstanceBind } from './useBind';
 
 type SetStateAction<S> = S | ((prevState: Immutable<S>) => S);
-
-function isReducer<S>(
-  action: SetStateAction<S>
-): action is (prevState: Immutable<S>) => S {
-  return typeof action === 'function';
-}
-
-export function useRxImmerTwoWayBind<T, V = any>(
-  rxImmer: RxImmer<T>,
-  listenPath: Path
-): [Immutable<V>, Dispatch<SetStateAction<V>>] {
-  const value = useRxImmerBind<T, V>(rxImmer, listenPath);
-
-  const setValue = useCallback<Dispatch<SetStateAction<V>>>(
-    (a) => {
-      const paths = toPath(listenPath);
-      if (paths.length) {
-        const v = isReducer(a) ? a(get(rxImmer.value(), paths)) : a;
-        const target = paths.pop();
-        rxImmer.commit((draft) => {
-          draft[target] = v;
-        }, paths);
-      }
-    },
-    [rxImmer, toPath(listenPath).join()]
-  );
-
-  return [value, setValue];
-}
 
 export interface WithUseTwoWayBind {
   useTwoWayBind<V = any>(
@@ -41,11 +11,25 @@ export interface WithUseTwoWayBind {
   ): [Immutable<V>, Dispatch<SetStateAction<V>>];
 }
 
-export function injectUseTwoWayBind<T>(
-  rxImmer: RxImmer<T> & Partial<WithUseTwoWayBind>
-) {
-  rxImmer.useTwoWayBind = function (listenPath: Path) {
-    return useRxImmerTwoWayBind(this, listenPath);
+export function useInstanceTwoWayBind(instance, listenPath) {
+  const value = useInstanceBind(instance, listenPath);
+
+  const setValue = useCallback(
+    (action) => {
+      instance.commitValue((wrapper) => {
+        wrapper.value =
+          typeof action === 'function' ? action(wrapper.value) : action;
+      }, listenPath);
+    },
+    [instance, assemblePath(listenPath)]
+  );
+
+  return [value, setValue];
+}
+
+export function injectUseTwoWayBind(instance) {
+  instance.useTwoWayBind = function (listenPath) {
+    return useInstanceTwoWayBind(this, listenPath);
   };
-  return rxImmer as RxImmer<T> & WithUseTwoWayBind;
+  return instance;
 }
