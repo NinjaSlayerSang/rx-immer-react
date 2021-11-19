@@ -68,6 +68,8 @@ import { RxImmerContext } from '...';
 const store = useContext(RxImmerContext);
 ```
 
+*创建上下文的配置项中可接受一个init方法，采用function(){}的方式（而非箭头函数）书写该方法，可在this中取到上下文创建的实例，对实例做一些初始化工作。该函数的返回值会存于Context对象中的Handler字段中，可以返回一些操作函数以自定义对实例的操作。*
+
 ## 将状态绑定到组件
 
 ```javascript
