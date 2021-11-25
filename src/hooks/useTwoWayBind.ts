@@ -4,11 +4,11 @@ import { Dispatch, useCallback } from 'react';
 import { useInstanceBind } from './useBind';
 
 type SetStateAction<S> = S | ((prevState: Immutable<S>) => S);
+type StateActionTuple<S> = [Immutable<S>, Dispatch<SetStateAction<S>>];
 
-export interface WithUseTwoWayBind {
-  useTwoWayBind<V = any>(
-    listenPath: Path
-  ): [Immutable<V>, Dispatch<SetStateAction<V>>];
+export interface WithUseTwoWayBind<T> {
+  useTwoWayBind(): StateActionTuple<T>;
+  useTwoWayBind<V = any>(listenPath: Path): StateActionTuple<V>;
 }
 
 export function useInstanceTwoWayBind(instance, listenPath) {
@@ -16,10 +16,10 @@ export function useInstanceTwoWayBind(instance, listenPath) {
 
   const setValue = useCallback(
     (action) => {
-      instance.commitValue((wrapper) => {
-        wrapper.value =
-          typeof action === 'function' ? action(wrapper.value) : action;
-      }, listenPath);
+      instance.commit(
+        (wrapper) => (typeof action === 'function' ? action(wrapper) : action),
+        listenPath
+      );
     },
     [instance, assemblePath(listenPath)]
   );

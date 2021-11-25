@@ -19,7 +19,7 @@ export function useInstanceBind(instance, listenPath) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [instance, assemblePath(listenPath ?? [])]);
+  }, [instance, assemblePath(listenPath)]);
 
   return value;
 }

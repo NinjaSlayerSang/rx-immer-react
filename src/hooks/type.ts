@@ -7,7 +7,7 @@ import { WithUseRoamStatus } from './useRoamStatus';
 
 export type PlainWithHooks<T> = Plain<T> &
   WithUseBind<T> &
-  WithUseTwoWayBind &
+  WithUseTwoWayBind<T> &
   Partial<WithUseRoamStatus> &
   Partial<WithUseDiachronySize>;
 
