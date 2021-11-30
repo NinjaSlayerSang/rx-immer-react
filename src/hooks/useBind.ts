@@ -1,6 +1,5 @@
 import { assemblePath, Immutable, Path } from 'rx-immer';
 import { useEffect, useState } from 'react';
-import { get } from 'lodash';
 
 export interface WithUseBind<T> {
   useBind(): Immutable<T>;
@@ -8,11 +7,7 @@ export interface WithUseBind<T> {
 }
 
 export function useInstanceBind(instance, listenPath) {
-  const [value, setValue] = useState(
-    listenPath === undefined
-      ? instance.value()
-      : get(instance.value(), listenPath)
-  );
+  const [value, setValue] = useState(instance.value(listenPath));
 
   useEffect(() => {
     const subscription = instance.observe(listenPath).subscribe(setValue);
