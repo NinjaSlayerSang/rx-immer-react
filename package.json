@@ -1,5 +1,5 @@
 {
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -55,6 +55,6 @@
   },
   "peerDependencies": {
     "react": ">=16",
-    "rx-immer": ">=0.3.1"
+    "rx-immer": ">=0.3.2"
   }
 }
