@@ -6,13 +6,13 @@ import { injectUseTwoWayBind } from './useTwoWayBind';
 import { injectUseDiachronySize } from './useDiachronySize';
 import { injectUseRoamStatus } from './useRoamStatus';
 
-export function injectHooks<T>(instance: RxImmer<T>) {
-  let injected = instance;
+export function injectHooks<T>(instance: RxImmer<T>): RxImmerWithHooks<T> {
+  let injected: any = instance;
 
   injected = injectUseBind(injected);
   injected = injectUseTwoWayBind(injected);
   injected = injectUseRoamStatus(injected);
   injected = injectUseDiachronySize(injected);
 
-  return injected as RxImmerWithHooks<T>;
+  return injected;
 }
