@@ -1,12 +1,14 @@
 import { Path, Plain } from 'rx-immer';
 
 import { WithUseBind } from './useBind';
+import { WithUseQuery } from './useQuery';
 import { WithUseTwoWayBind } from './useTwoWayBind';
 import { WithUseDiachronySize } from './useDiachronySize';
 import { WithUseRoamStatus } from './useRoamStatus';
 
 export type PlainWithHooks<T> = Plain<T> &
   WithUseBind<T> &
+  WithUseQuery &
   WithUseTwoWayBind<T> &
   Partial<WithUseRoamStatus> &
   Partial<WithUseDiachronySize>;
