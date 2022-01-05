@@ -55,6 +55,6 @@
   },
   "peerDependencies": {
     "react": ">=16",
-    "rx-immer": ">=0.3.2"
+    "rx-immer": ">=0.4.0"
   }
 }
