@@ -1,4 +1,4 @@
-import { Path, Plain } from 'rx-immer';
+import type { Path, Plain } from 'rx-immer';
 
 import { WithUseBind } from './useBind';
 import { WithUseQuery } from './useQuery';
