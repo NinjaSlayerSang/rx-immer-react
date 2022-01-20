@@ -40,7 +40,7 @@ export function createRxImmerContext<T, R>(
   const context = createContext(rxImmer);
 
   const Provider: any = ({ children }) =>
-    createElement(context.Provider, { children, value: rxImmer });
+    createElement(context.Provider, { value: rxImmer }, children);
 
   return {
     ...context,

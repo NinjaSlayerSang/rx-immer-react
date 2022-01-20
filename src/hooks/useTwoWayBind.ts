@@ -1,4 +1,4 @@
-import { assemblePath, Immutable, Path } from 'rx-immer';
+import { assemblePath, Immutable, nothing, Path } from 'rx-immer';
 import { Dispatch, useCallback } from 'react';
 
 import { useInstanceBind } from './useBind';
@@ -17,7 +17,12 @@ export function useInstanceTwoWayBind(instance, listenPath) {
   const setValue = useCallback(
     (action) => {
       instance.commit(
-        (wrapper) => (typeof action === 'function' ? action(wrapper) : action),
+        (wrapper) =>
+          typeof action === 'function'
+            ? action(wrapper)
+            : action === undefined
+            ? nothing
+            : action,
         listenPath
       );
     },
