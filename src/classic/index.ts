@@ -1,3 +1,5 @@
 export type { ComposedProps } from './type';
-export * from './compose';
-export * from './injectWithContext';
+
+export * from './injectDataWithInstance';
+export * from './injectInstanceWithContext';
+// export * from './utils';

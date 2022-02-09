@@ -3,7 +3,7 @@ import { Component, ComponentClass, createElement } from 'react';
 
 import type { ReactComponent } from './type';
 
-export function compose<
+export function injectDataWithInstance<
   K extends string = 'data',
   I extends string = 'instance'
 >(
