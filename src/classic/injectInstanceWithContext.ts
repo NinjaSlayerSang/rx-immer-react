@@ -3,7 +3,7 @@ import { Context, createElement, FunctionComponent } from 'react';
 
 import type { ReactComponent } from './type';
 
-export function injectWithContext<
+export function injectInstanceWithContext<
   T extends Objectish,
   I extends string = 'instance'
 >(
