@@ -1,4 +1,4 @@
-import { Config, create, DeepPartial, Objectish } from 'rx-immer';
+import { create, Objectish, Plugin, RxImmer } from 'rx-immer';
 import {
   Context,
   createContext,
@@ -7,35 +7,27 @@ import {
   ProviderProps,
 } from 'react';
 
-import { injectHooks, RxImmerWithHooks } from '../hooks';
-
-interface WithInitialize<T, R = any> {
-  init: (this: RxImmerWithHooks<T>) => R;
-}
-
-interface WithInitializedHandler<R> {
-  Handler: R;
-}
+import { presetReactPlugin, PresetReactPluginsExt } from '../plugins/const';
 
 interface ConstantContext<T> extends Context<T> {
   Provider: ProviderExoticComponent<Omit<ProviderProps<T>, 'value'>>;
 }
 
-export function createRxImmerContext<T extends Objectish>(
+export function createRxImmerContext<
+  T extends Objectish,
+  E extends {} = {},
+  R extends {} = {}
+>(
   initial: T,
-  config?: DeepPartial<Config>
-): ConstantContext<RxImmerWithHooks<T>>;
-
-export function createRxImmerContext<T extends Objectish, R = any>(
-  initial: T,
-  config?: DeepPartial<Config> & WithInitialize<T, R>
-): ConstantContext<RxImmerWithHooks<T>> & WithInitializedHandler<R>;
-
-export function createRxImmerContext<T, R>(
-  initial: T,
-  config?: DeepPartial<Config> & Partial<WithInitialize<T, R>>
-) {
-  const rxImmer = injectHooks(create<T>(initial, config));
+  handler?: (this: RxImmer<T>) => R,
+  plugins: Plugin[] = []
+): ConstantContext<RxImmer<T, PresetReactPluginsExt<T> & E>> & {
+  Handler: R;
+} {
+  const rxImmer = create<T, PresetReactPluginsExt<T> & E>(
+    initial,
+    presetReactPlugin.concat(plugins)
+  );
 
   const context = createContext(rxImmer);
 
@@ -45,6 +37,6 @@ export function createRxImmerContext<T, R>(
   return {
     ...context,
     Provider,
-    Handler: config?.init?.call(rxImmer),
+    Handler: handler?.call(rxImmer) ?? ({} as R),
   };
 }

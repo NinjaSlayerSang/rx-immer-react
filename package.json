@@ -1,5 +1,5 @@
 {
-  "version": "0.4.2",
+  "version": "1.0.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -44,17 +44,17 @@
     }
   ],
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^7.0.5",
-    "@types/react": "^17.0.38",
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "@types/react": "^17.0.42",
     "husky": "^7.0.4",
-    "prettier": "^2.5.1",
-    "size-limit": "^7.0.5",
+    "prettier": "^2.6.0",
+    "size-limit": "^7.0.8",
     "tsdx": "^0.14.1",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.4"
+    "typescript": "^4.6.2"
   },
   "peerDependencies": {
     "react": ">=17",
-    "rx-immer": ">=0.4.2"
+    "rx-immer": ">=1.0.0"
   }
 }

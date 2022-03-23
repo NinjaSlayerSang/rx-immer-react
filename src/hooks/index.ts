@@ -1,3 +1,1 @@
-export * from './type';
-export * from './useRxImmer';
-export * from './inject';
+export * from './use-rx-immer';
