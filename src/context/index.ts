@@ -1,4 +1,4 @@
-import { create, Objectish, Plugin, RxImmer } from 'rx-immer';
+import type { Objectish, Plugin } from 'rx-immer';
 import {
   Context,
   createContext,
@@ -7,10 +7,12 @@ import {
   ProviderProps,
 } from 'react';
 
-import { presetReactPlugin, PresetReactPluginsExt } from '../plugins/const';
+import type { RxImmerReact } from '../type';
+import { create } from '../create';
 
-interface ConstantContext<T> extends Context<T> {
-  Provider: ProviderExoticComponent<Omit<ProviderProps<T>, 'value'>>;
+interface ConstantContext<S, R> extends Context<S> {
+  Provider: ProviderExoticComponent<Omit<ProviderProps<S>, 'value'>>;
+  Handler: R;
 }
 
 export function createRxImmerContext<
@@ -19,24 +21,19 @@ export function createRxImmerContext<
   R extends {} = {}
 >(
   initial: T,
-  handler?: (this: RxImmer<T>) => R,
+  handler?: (this: RxImmerReact<T, E>) => R,
   plugins: Plugin[] = []
-): ConstantContext<RxImmer<T, PresetReactPluginsExt<T> & E>> & {
-  Handler: R;
-} {
-  const rxImmer = create<T, PresetReactPluginsExt<T> & E>(
-    initial,
-    presetReactPlugin.concat(plugins)
-  );
+): ConstantContext<RxImmerReact<T, E>, R> {
+  const value = create<T, E>(initial, plugins);
 
-  const context = createContext(rxImmer);
+  const context = createContext(value);
 
   const Provider: any = ({ children }) =>
-    createElement(context.Provider, { value: rxImmer }, children);
+    createElement(context.Provider, { value }, children);
 
   return {
     ...context,
     Provider,
-    Handler: handler?.call(rxImmer) ?? ({} as R),
+    Handler: handler?.call(value) ?? ({} as R),
   };
 }

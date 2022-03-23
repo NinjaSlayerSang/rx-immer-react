@@ -1,15 +1,16 @@
-import { create, Objectish, Plugin, RxImmer } from 'rx-immer';
+import type { Objectish, Plugin } from 'rx-immer';
 import { useEffect, useRef } from 'react';
 
-import { presetReactPlugin, PresetReactPluginsExt } from '../plugins/const';
+import type { RxImmerReact } from '../type';
+import { create } from '../create';
 
 export function useRxImmer<T extends Objectish, E extends {} = {}>(
   initial: T,
   plugins: Plugin[] = []
-): RxImmer<T, PresetReactPluginsExt<T> & E> {
-  const ref = useRef<any>();
+): RxImmerReact<T, E> {
+  const ref = useRef<RxImmerReact<T, E>>();
   if (!ref.current) {
-    ref.current = create(initial, presetReactPlugin.concat(plugins));
+    ref.current = create<T, E>(initial, plugins);
   }
 
   useEffect(() => {
