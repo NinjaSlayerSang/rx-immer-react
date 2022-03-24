@@ -9,7 +9,7 @@ export default {
   generate(Cls) {
     return class extends Cls {
       useDiachronySize() {
-        const [size, setSize] = useState(this.size$?.getValue());
+        const [size, setSize] = useState(this.size$.getValue());
 
         useEffect(() => {
           const subscription = this.size$.subscribe(setSize);
