@@ -6,8 +6,6 @@ rx-immer-react包含自定义hooks方便在React项目中更加便捷地使用rx
 - [创建实例上下文](#创建实例上下文)
 - [将状态绑定到组件](#将状态绑定到组件)
   - [双向绑定](#双向绑定)
-- [扩展功能](#扩展功能)
-  - [操作记录栈](#操作记录栈)
 
 ## 创建实例并挂载到组件
 
@@ -18,7 +16,7 @@ const store = useRxImmer({});
 内部使用了*useRef*来创建并挂载实例，并且在React组件卸载时自动调用实例的`destroy`方法。
 
 在TypeScript中，`useRxImmer<T>`作为泛型函数，能够显式地指定类型，指示状态值的类型信息。
-并且，`useRxImmer`接受第一个参数，作为状态的初始值，可选地接受第二个参数*config*，作为实例创建的配置项。
+并且，`useRxImmer`接受第一个参数，作为状态的初始值，可选地接受第二个参数*plugins*，作为实例创建的插件列表。
 
 ```typescript
 import { useRxImmer } from 'rx-immer-react';
@@ -31,9 +29,9 @@ interface IState {
 
 // 在React组件中...
 
-const store = useRxImmer<IState>(
+const store = useRxImmer<IState, HistoryPluginExt & HistoryHooksPluginExt /* 插件扩展的interface */ >(
     { id: 0, name: 'abc', status: true }, // 初始状态
-    { history: { capacity: 1000 } }, // 配置项
+    [ historyPlugin(), historyHooksPlugin ], // 插件列表
   );
 ```
 
@@ -46,7 +44,7 @@ const store = useRxImmer<IState>(
 
 import { createRxImmerContext } from 'rx-immer-react';
 
-export const RxImmerContext = createRxImmerContext({}, { /* 配置项 */ });
+export const RxImmerContext = createRxImmerContext({});
 
 // Provider包裹
 
@@ -68,7 +66,7 @@ import { RxImmerContext } from '...';
 const store = useContext(RxImmerContext);
 ```
 
-*创建上下文的配置项中可接受一个init方法，采用function(){}的方式（而非箭头函数）书写该方法，可在this中取到上下文创建的实例，对实例做一些初始化工作。该函数的返回值会存于Context对象中的Handler字段中，可以返回一些操作函数以自定义对实例的操作。*
+*创建上下文的第二个参数接受一个函数，如采用function(){}的方式（而非箭头函数）书写该方法，可在this中取到上下文创建的实例，也可采用箭头函数写法从第一个参数种取到上下文创建的实例，对实例做一些初始化工作。该函数的返回值会存于Context对象中的Handler字段中，可以返回一些操作函数以自定义对实例的操作。*
 
 ## 将状态绑定到组件
 
@@ -96,26 +94,8 @@ const [state, setState] = store.useTwoWayBind('a[0].b.c');
 setState(11); // 修改'a[0].b.c'的值
 ```
 
-*注意：useBind等注入到实例方法中的自定义hooks会通过Mixin模式依据配置动态注入，注入过程发生在useRxImmer中。因此，只有通过useRxImmer创建的实例会自动含有内联的自定义hooks，如果通过其他方式创建，则需要手动注入hooks：*
+*注意：useBind等注入到实例方法中的自定义hooks是rx-immer-react包中预置插件的功能，使用rx-immer-react包中的create创建实例默认加载预置插件*
 
 ```javascript
-import { injectHooks } from 'rx-immer-react';
-
-// 不通过useRxImmer创建实例store...
-
-const storeWithHooks = injectHooks(store);
+import { create } from 'rx-immer-react';
 ```
-
-## 扩展功能
-
-rx-immer-react为rx-immer的扩展功能编写了一些便捷方法。
-
-### 操作记录栈
-
-在*React*中，可以利用扩展功能附带的自定义hooks将操作记录栈状态信息绑定到组件state中：
-
-```javascript
-const [undos, redos] = store.useRoamStatus?.() ?? [0, 0];
-```
-
-*同样的，useRoamStatus这个内联到实例内部的自定义hooks是在useRxImmer中动态注入到实例方法中的，只有通过useRxImmer创建的实例会依据配置项中是否开启相关扩展功能可选地包含自定义hooks。*
