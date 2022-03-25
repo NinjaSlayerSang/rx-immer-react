@@ -21,7 +21,7 @@ export function createRxImmerContext<
   R extends {} = {}
 >(
   initial: T,
-  handler?: (this: RxImmerReact<T, E>) => R,
+  handler?: (this: RxImmerReact<T, E>, instance: RxImmerReact<T, E>) => R,
   plugins: Plugin[] = []
 ): ConstantContext<RxImmerReact<T, E>, R> {
   const value = create<T, E>(initial, plugins);
@@ -34,6 +34,6 @@ export function createRxImmerContext<
   return {
     ...context,
     Provider,
-    Handler: handler?.call(value) ?? ({} as R),
+    Handler: handler?.call(value, value) ?? ({} as R),
   };
 }
