@@ -1,4 +1,4 @@
-import { Config, create, DeepPartial, Objectish } from 'rx-immer';
+import type { Objectish, Plugin } from 'rx-immer';
 import {
   Context,
   createContext,
@@ -7,44 +7,33 @@ import {
   ProviderProps,
 } from 'react';
 
-import { injectHooks, RxImmerWithHooks } from '../hooks';
+import type { RxImmerReact } from '../type';
+import { create } from '../create';
 
-interface WithInitialize<T, R = any> {
-  init: (this: RxImmerWithHooks<T>) => R;
-}
-
-interface WithInitializedHandler<R> {
+interface ConstantContext<S, R> extends Context<S> {
+  Provider: ProviderExoticComponent<Omit<ProviderProps<S>, 'value'>>;
   Handler: R;
 }
 
-interface ConstantContext<T> extends Context<T> {
-  Provider: ProviderExoticComponent<Omit<ProviderProps<T>, 'value'>>;
-}
-
-export function createRxImmerContext<T extends Objectish>(
+export function createRxImmerContext<
+  T extends Objectish,
+  E extends {} = {},
+  R extends {} = {}
+>(
   initial: T,
-  config?: DeepPartial<Config>
-): ConstantContext<RxImmerWithHooks<T>>;
+  handler?: (this: RxImmerReact<T, E>, instance: RxImmerReact<T, E>) => R,
+  plugins: Plugin[] = []
+): ConstantContext<RxImmerReact<T, E>, R> {
+  const value = create<T, E>(initial, plugins);
 
-export function createRxImmerContext<T extends Objectish, R = any>(
-  initial: T,
-  config?: DeepPartial<Config> & WithInitialize<T, R>
-): ConstantContext<RxImmerWithHooks<T>> & WithInitializedHandler<R>;
-
-export function createRxImmerContext<T, R>(
-  initial: T,
-  config?: DeepPartial<Config> & Partial<WithInitialize<T, R>>
-) {
-  const rxImmer = injectHooks(create<T>(initial, config));
-
-  const context = createContext(rxImmer);
+  const context = createContext(value);
 
   const Provider: any = ({ children }) =>
-    createElement(context.Provider, { value: rxImmer }, children);
+    createElement(context.Provider, { value }, children);
 
   return {
     ...context,
     Provider,
-    Handler: config?.init?.call(rxImmer),
+    Handler: handler?.call(value, value) ?? ({} as R),
   };
 }

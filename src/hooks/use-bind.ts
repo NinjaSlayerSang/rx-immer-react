@@ -1,10 +1,5 @@
-import { assemblePath, Immutable, Path } from 'rx-immer';
+import { assemblePath } from 'rx-immer';
 import { useEffect, useState } from 'react';
-
-export interface WithUseBind<T> {
-  useBind(): Immutable<T>;
-  useBind<V = any>(listenPath: Path): Immutable<V>;
-}
 
 export function useInstanceBind(instance, listenPath) {
   const [value, setValue] = useState(instance.value(listenPath));
@@ -17,11 +12,4 @@ export function useInstanceBind(instance, listenPath) {
   }, [instance, assemblePath(listenPath)]);
 
   return value;
-}
-
-export function injectUseBind(instance) {
-  instance.useBind = function (listenPath) {
-    return useInstanceBind(this, listenPath);
-  };
-  return instance;
 }
