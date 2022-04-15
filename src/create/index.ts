@@ -7,7 +7,7 @@ export function create<T extends Objectish, E extends {} = {}>(
   initial: T,
   plugins: Plugin[] = []
 ): RxImmerReact<T, E> {
-  return protoCreate<T, ReactPluginsExt<T> & E>(
+  return protoCreate<T, ReactPluginsExt & E>(
     initial,
     reactPlugins.concat(plugins)
   );

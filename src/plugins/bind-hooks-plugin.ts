@@ -7,12 +7,10 @@ import { useInstanceTwoWayBind } from '../hooks/use-two-way-bind';
 type SetStateAction<S> = S | ((prevState: Immutable<S>) => S);
 type StateActionTuple<S> = [Immutable<S>, Dispatch<SetStateAction<S>>];
 
-export interface BindHooksPluginExt<T> {
-  useBind(): Immutable<T>;
-  useBind<V = any>(listenPath: Path): Immutable<V>;
+export interface BindHooksPluginExt {
+  useBind<V = any>(listenPath?: Path): Immutable<V>;
 
-  useTwoWayBind(): StateActionTuple<T>;
-  useTwoWayBind<V = any>(listenPath: Path): StateActionTuple<V>;
+  useTwoWayBind<V = any>(listenPath?: Path): StateActionTuple<V>;
 }
 
 export default {

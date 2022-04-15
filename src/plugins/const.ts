@@ -7,6 +7,6 @@ import {
   QueryHooksPluginExt,
 } from '.';
 
-export type ReactPluginsExt<T> = BindHooksPluginExt<T> & QueryHooksPluginExt;
+export type ReactPluginsExt = BindHooksPluginExt & QueryHooksPluginExt;
 
 export const reactPlugins: Plugin[] = [bindHooksPlugin, queryHooksPlugin];
