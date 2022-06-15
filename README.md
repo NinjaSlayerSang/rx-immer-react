@@ -3,7 +3,6 @@
 rx-immer-react包含自定义hooks方便在React项目中更加便捷地使用rx-immer。
 
 - [创建实例并挂载到组件](#创建实例并挂载到组件)
-- [创建实例上下文](#创建实例上下文)
 - [将状态绑定到组件](#将状态绑定到组件)
   - [双向绑定](#双向绑定)
 
@@ -36,37 +35,6 @@ const store = useRxImmer<IState, HistoryPluginExt & HistoryHooksPluginExt /* 插
 ```
 
 配置项详情参见rx-immer文档。
-
-## 创建实例上下文
-
-```javascript
-// 创建上下文
-
-import { createRxImmerContext } from 'rx-immer-react';
-
-export const RxImmerContext = createRxImmerContext({});
-
-// Provider包裹
-
-import { RxImmerContext } from '...'; 
-
-// JSX
-
-<RxImmerContext.Provider>
-  {...子组件}
-</RxImmerContext.Provider>
-
-// 在组件中使用
-
-import { useContext } from 'react';
-import { RxImmerContext } from '...';
-
-// 在React组件中...
-
-const store = useContext(RxImmerContext);
-```
-
-*创建上下文的第二个参数接受一个函数，如采用function(){}的方式（而非箭头函数）书写该方法，可在this中取到上下文创建的实例，也可采用箭头函数写法从第一个参数种取到上下文创建的实例，对实例做一些初始化工作。该函数的返回值会存于Context对象中的Handler字段中，可以返回一些操作函数以自定义对实例的操作。*
 
 ## 将状态绑定到组件
 
